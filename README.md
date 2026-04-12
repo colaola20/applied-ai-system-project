@@ -29,6 +29,31 @@ Some prompts to answer:
 
 You can include a simple diagram or bullet list if helpful.
 
+- To keep things simple I'm gonna try to go with only 5 features (genre, mood, energy, acousticness, and valence) although I understand that for real-world system and in general for learning more complicated connection and patterns the system should have more features.
+- UserProfile will store user's preferences for genre, mood, energy, and likes_acoustic which will be taken into account by system and compare with songs feature.
+- Every feature will have a weight assigned to it (genre-0.4, mood-0.3, energy-0.2, and acousticness-0.1). Valence will be taken into account inside of the mood match calculations. 
+
+#### Scoring Rule:
+Scoring formula: 
+  score = (0.4 × genre_match)
+      + (0.3 × mood_match)
+      + (0.2 × energy_match)
+      + (0.1 × acoustic_match)
+
+genre_match: 1 if song.genre == user.genre else 0
+mood_match: 0.7 if mood matches + 0.3 x valence_alignment
+energy_match: 1 - abc(song.energy - user.energy)
+acoustic_match: song.acousticness if user.likes_acoustic else 1.0 - song.acousticness
+
+valence_alignment will depend on user.mood:
+  if user.favorite_mood in ("happy", "intense"):
+    valence_alignment = song.valence          # high valence = good fit
+
+  if user.favorite_mood in ("chill", "moody", "relaxed", "focused"):
+      valence_alignment = 1.0 - song.valence   # low valence = better fit
+
+#### Ranking Rule:
+Then songs will be sorted by score desc and algorithm will return first k songs.
 ---
 
 ## Getting Started
