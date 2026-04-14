@@ -2,10 +2,7 @@
 
 ## 1. Model Name  
 
-
-
-Give your model a short, descriptive name.  
-Example: **VibeFinder 1.0**  
+**MindReader**
 
 ---
 
@@ -32,7 +29,25 @@ Prompts:
 - How does the model turn those into a score  
 - What changes did you make from the starter logic  
 
-Avoid code here. Pretend you are explaining the idea to a friend who does not program.
+**The MindReader** will take user preference such as favorite genre, favorite mood, target energy, and if they like acoustics, and then it will compare it with songs characteristics in particular genre, mood, energy, accoustic, and valence will be taken into account.
+
+Scoring formula: 
+  score = (0.4 × genre_match)
+      + (0.3 × mood_match)
+      + (0.2 × energy_match)
+      + (0.1 × acoustic_match)
+
+genre_match: 1 if song.genre == user.genre else 0
+mood_match: 0.7 if mood matches + 0.3 x valence_alignment
+energy_match: 1 - abc(song.energy - user.energy)
+acoustic_match: song.acousticness if user.likes_acoustic else 1.0 - song.acousticness
+
+valence_alignment will depend on user.mood:
+  if user.favorite_mood in ("happy", "intense"):
+    valence_alignment = song.valence          # high valence = good fit
+
+  if user.favorite_mood in ("chill", "moody", "relaxed", "focused"):
+      valence_alignment = 1.0 - song.valence   # low valence = better fit
 
 ---
 
@@ -43,9 +58,13 @@ Describe the dataset the model uses.
 Prompts:  
 
 - How many songs are in the catalog  
-- What genres or moods are represented  
+    There are originally 10 songs in the songs.csv, but later 8 more were added.
+- What genres or moods are represented 
+    The dataset contains a wide variaty of genre and moods such as pop, lofi, rock, jazz, country, R&B, metal, and so on.
 - Did you add or remove data  
-- Are there parts of musical taste missing in the dataset  
+    Yes, I added 8 more songs.
+- Are there parts of musical taste missing in the dataset
+    Not sure.
 
 ---
 
