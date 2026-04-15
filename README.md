@@ -92,28 +92,8 @@ You can add more tests in `tests/test_recommender.py`.
 ---
 
 ## Data Flow Map
-data/songs.csv
-    │
-    ▼
-load_songs(csv_path)          ← src/recommender.py
-    │  reads CSV rows into List[Dict]
-    │  
-    ▼
-songs: List[Dict]
-    │
-    │                         user_prefs: Dict
-    │                         (hardcoded in main.py)
-    │                             │
-    ▼                             ▼
-recommend_songs(user_prefs, songs, k=5)    ← src/recommender.py
-    │
-    │  internally calls score_song() per song
-    │  ranks songs by score, returns top-k
-    ▼
-List[Tuple[Dict, float, str]]
-    │   (song_dict, score, explanation)
-    ▼
-main()  prints results         ← src/main.py
+<img width="464" height="460" alt="Screenshot 2026-04-14 at 10 42 34 PM" src="https://github.com/user-attachments/assets/2edd2639-e81e-498b-9aa2-8f46671df76a" />
+
 
 
 <img width="448" height="539" alt="Screenshot 2026-04-13 at 9 38 07 PM" src="https://github.com/user-attachments/assets/1bfb9172-2ccc-4ca3-892d-e10dbdefd732" />
