@@ -74,23 +74,10 @@ I checked the system with variety of user profiles and analized recommender's re
 
 ## 8. Future Work  
 
-Ideas for how you would improve the model next.  
-
-Prompts:  
-
-- Additional features or preferences  
-- Better ways to explain recommendations  
-- Improving diversity among the top results  
-- Handling more complex user tastes  
+One improvement I would like to make is adding more user preference dimensions, such as tempo (BPM) and era (decade the song was released), to produce more personalized recommendations. I would also like to introduce a diversity penalty so the top results don't cluster around a single genre, giving users a broader range of suggestions. Another direction is building an explanation layer that tells the user *why* a song was recommended — for example, "ranked #1 because the genre and mood are a perfect match and the energy is very close to your target." Finally, expanding the song catalog with hundreds of real tracks and experimenting with collaborative filtering would help MindReader move from a classroom prototype toward a more realistic recommender system.
 
 ---
 
 ## 9. Personal Reflection  
 
-A few sentences about your experience.  
-
-Prompts:  
-
-- What you learned about recommender systems  
-- Something unexpected or interesting you discovered  
-- How this changed the way you think about music recommendation apps  
+Working on MindReader taught me that even a simple rule-based recommender can feel surprisingly smart when the feature weights are tuned thoughtfully. The most unexpected thing I discovered was how much the valence alignment matters — flipping the valence logic between "happy/intense" and "chill/moody" moods made a noticeable difference in result quality without changing anything else. I also gained a new appreciation for how much data diversity matters: when the song catalog was small, the model had no good answer for niche taste profiles, which showed me why real streaming services invest so heavily in catalog size. This project changed the way I think about apps like Spotify — what looks like magic is often a carefully weighted combination of a few well-chosen features, and the hard part is choosing the right features and getting the weights right.
