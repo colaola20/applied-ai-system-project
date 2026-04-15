@@ -11,7 +11,7 @@ Your goal is to:
 - Evaluate what your system gets right and wrong
 - Reflect on how this mirrors real world AI recommenders
 
-Replace this paragraph with your own summary of what your version does.
+MindReader recommends a list of songs to a user based on their preferences.
 
 ---
 
@@ -115,6 +115,12 @@ List[Tuple[Dict, float, str]]
     ▼
 main()  prints results         ← src/main.py
 
+<img width="448" height="539" alt="Screenshot 2026-04-13 at 9 38 07 PM" src="https://github.com/user-attachments/assets/1bfb9172-2ccc-4ca3-892d-e10dbdefd732" />
+
+<img width="830" height="163" alt="Screenshot 2026-04-14 at 10 04 47 PM" src="https://github.com/user-attachments/assets/9c7822a4-57fe-49cf-8ba8-7bcd4f1b780d" />
+
+
+
 
 ## Experiments You Tried
 
@@ -150,6 +156,86 @@ Write 1 to 2 paragraphs here about what you learned:
 
 - about how recommenders turn data into predictions
 - about where bias or unfairness could show up in systems like this
+
+
+---
+
+## Results
+user_prefs = {
+        "favorite_genre": "indie pop",   # preferred genre label (categorical match)
+        "favorite_mood": "happy",        # preferred mood label (categorical match)
+        "target_energy": 0.78,           # 0.0 (calm) → 1.0 (intense)
+        "likes_acoustic": False,         # boolean flag for acoustic preference
+    }
+    
+<img width="508" height="598" alt="Screenshot 2026-04-14 at 9 47 42 PM" src="https://github.com/user-attachments/assets/faf69ad7-8819-4fa5-b695-58b10241500b" />
+
+MindReader correctly identifies the best fitted song for this user and scores it with .94. The second song is also a good choice since the genre is pop and the mood is happy for that song.
+
+lofi_studier = {
+        "favorite_genre": "lofi",
+        "favorite_mood": "focused",
+        "target_energy": 0.38,
+        "likes_acoustic": True,
+    }
+
+<img width="508" height="598" alt="Screenshot 2026-04-14 at 9 47 51 PM" src="https://github.com/user-attachments/assets/db63f0d7-67ea-4e11-87ac-b43d3a2c73ae" />
+
+MindReader gives a good recommendations for this user. First pick is **Focus Flow** which is very well matched with user's preferences.
+
+gym_grinder = {
+        "favorite_genre": "metal",
+        "favorite_mood": "intense",
+        "target_energy": 0.95,
+        "likes_acoustic": False,
+    }
+
+<img width="508" height="598" alt="Screenshot 2026-04-14 at 9 47 57 PM" src="https://github.com/user-attachments/assets/c65b41a4-b536-4564-b880-5c39be2013b6" />
+
+Different preference but the same excelent result.
+
+brunch_vibes = {
+        "favorite_genre": "jazz",
+        "favorite_mood": "relaxed",
+        "target_energy": 0.40,
+        "likes_acoustic": True,
+    }
+
+<img width="508" height="598" alt="Screenshot 2026-04-14 at 9 48 05 PM" src="https://github.com/user-attachments/assets/0129bcbf-bd53-4422-bae9-c6aa459ec8a5" />
+
+MindReader picked **Coffee Shop Stories** which satisfy user's genre, mood, and acoustic preferences. It also has strong energy fit.
+
+ #### --- Adversarial profiles ---
+phantom_genre = {
+        "favorite_genre": "k-pop",
+        "favorite_mood": "happy",
+        "target_energy": 0.82,
+        "likes_acoustic": False,
+    }
+
+<img width="508" height="598" alt="Screenshot 2026-04-14 at 9 49 20 PM" src="https://github.com/user-attachments/assets/17ee9f2e-8d87-4876-81b5-8d7c21977a2d" />
+
+Since user's prefered genre isn't existing, MindReader has to relay on others parameters. It's still does a good matching job but the confident is much lower here.
+
+out_of_bounds_energy = {
+        "favorite_genre": "classical",
+        "favorite_mood": "melancholic",
+        "target_energy": 1.5,
+        "likes_acoustic": True,
+    }
+    
+<img width="508" height="521" alt="Screenshot 2026-04-14 at 9 49 26 PM" src="https://github.com/user-attachments/assets/bdf1d626-d7c4-4ab1-97f0-1a48d0179026" />
+
+Here user targeting non-existing energy which creater negetive effect on scoring. Even with that MindReader is able to pick a good song. Although, there is only one good fit because of limited songs data.
+
+valence_direction_bug = {
+        "favorite_genre": "latin",
+        "favorite_mood": "uplifting",
+        "target_energy": 0.78,
+        "likes_acoustic": False,
+    }
+
+Even with having the Recommender taking of point for valence since mood is uplifting and not happy or intense, MindReader is able to pick a good fit song with correct genre, mood and energy level. Although the confident of the recommender is lower than usual in this case.
 
 
 ---
