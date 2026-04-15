@@ -8,7 +8,7 @@
 
 ## 2. Intended Use  
 
-Describe what your recommender is designed to do and who it is for. 
+MindReader recommends a list of songs from a list of all available songs to a user based on user preferences and reasons its suggestions.
 
 Prompts:  
 
@@ -19,15 +19,6 @@ Prompts:
 ---
 
 ## 3. How the Model Works  
-
-Explain your scoring approach in simple language.  
-
-Prompts:  
-
-- What features of each song are used (genre, energy, mood, etc.)  
-- What user preferences are considered  
-- How does the model turn those into a score  
-- What changes did you make from the starter logic  
 
 **The MindReader** will take user preference such as favorite genre, favorite mood, target energy, and if they like acoustics, and then it will compare it with songs characteristics in particular genre, mood, energy, accoustic, and valence will be taken into account.
 
@@ -54,13 +45,8 @@ valence_alignment will depend on user.mood:
 ## 4. Data  
 
 Describe the dataset the model uses.  
+There are originally 10 songs in the songs.csv, but later 8 more were added. The dataset contains a wide variaty of genre and moods such as pop, lofi, rock, jazz, country, R&B, metal, and so on.
 
-Prompts:  
-
-- How many songs are in the catalog  
-    There are originally 10 songs in the songs.csv, but later 8 more were added.
-- What genres or moods are represented 
-    The dataset contains a wide variaty of genre and moods such as pop, lofi, rock, jazz, country, R&B, metal, and so on.
 - Did you add or remove data  
     Yes, I added 8 more songs.
 - Are there parts of musical taste missing in the dataset
