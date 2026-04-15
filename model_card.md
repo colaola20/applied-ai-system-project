@@ -56,41 +56,19 @@ There are originally 10 songs in the songs.csv, but later 8 more were added. The
 
 ## 5. Strengths  
 
-Where does your system seem to work well  
-
-Prompts:  
-
-- User types for which it gives reasonable results  
-- Any patterns you think your scoring captures correctly  
-- Cases where the recommendations matched your intuition  
+The MindReader seams to work well when user gives them stright forward preferences instead of mixed in (for example when genre is metal and mood is happy).
 
 ---
 
 ## 6. Limitations and Bias 
 
-Where the system struggles or behaves unfairly. 
-
-Prompts:  
-
-- Features it does not consider  
-- Genres or moods that are underrepresented  
-- Cases where the system overfits to one preference  
-- Ways the scoring might unintentionally favor some users  
+The MindReader struggels a bit with incorrect preferences like unexisting genre or mixed preference like (genre: metal and mood: happy), but even with that give good results which means that this  effects only system confident but not results.
 
 ---
 
 ## 7. Evaluation  
 
-How you checked whether the recommender behaved as expected. 
-
-Prompts:  
-
-- Which user profiles you tested  
-- What you looked for in the recommendations  
-- What surprised you  
-- Any simple tests or comparisons you ran  
-
-No need for numeric metrics unless you created some.
+I checked the system with variety of user profiles and analized recommender's results if thay matching user preferences. I also added adversarial profiles and run recommender for these as well. The System worked correctly. Finally, I added tests cases and run pytests.
 
 ---
 
