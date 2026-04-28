@@ -22,14 +22,50 @@ Natural language input  →  Groq (profile parser)  →  UserProfile
                                                            ↓
                                                       top-k results
 
-* Uses Groq api to parse natural user input into a structured UserProfile.
+* Uses Groq api to parse natural user input into a structured UserProfile and to prompt user for an input in Discover mode.
+
+
 
 ## 3. Setup Instructions:
+
+### 1. Clone the repository and create a virtual environment:
+git clone <your-repo-url>
+cd applied-ai-system-project
+python -m venv env
+source env/bin/activate        # Mac/Linux
+env\Scripts\activate           # Windows
+
+### 2. Install dependencies:
+pip install -r requirements.txt
+
+### 3. Add your API key — create a .env file in the project root:
+GROQ_API_KEY=your-groq-key-here
+Get a free key at console.groq.com.
+
+### 4. Fetch the real song catalog (439 songs across 15 genres):
+python scripts/fetch_songs.py
+This downloads from two public datasets — no API key needed.
+
+### 5. Run the Streamlit app:
+streamlit run app.py
+
+Or run the CLI instead:
+python src/main.py              # interactive natural language mode
+python src/main.py --demo       # run 7 hardcoded test profiles
+
+### 6. Run the test suite:
+pytest
+
+### 7. Run the evaluation loop:
+python src/eval.py
+
 ## 4. Sample Interactions:
 ## 5. Design Decisions:
+I wanted the app to be easy to use for everyone and to be relyable with real data recommendations. First of all I added Groq Api to interpret 
 ## 6. Testing Summary: 
 ## 7. Reflection:
 
+_______________________________________
 
 ## Project Summary
 

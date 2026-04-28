@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 load_dotenv(".env")
 
 import streamlit as st
+import streamlit.components.v1 as components
 from recommender import load_songs, recommend_songs
 from profile_parser import parse_profile, chat_to_profile
 
@@ -30,9 +31,9 @@ songs = get_songs()
 def show_profile(prefs: dict) -> None:
     st.subheader("What I understood")
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Genre",   prefs["favorite_genre"])
-    c2.metric("Mood",    prefs["favorite_mood"])
-    c3.metric("Energy",  f"{prefs['target_energy']:.2f}")
+    c1.metric("Genre",    prefs["favorite_genre"])
+    c2.metric("Mood",     prefs["favorite_mood"])
+    c3.metric("Energy",   f"{prefs['target_energy']:.2f}")
     c4.metric("Acoustic", "Yes" if prefs["likes_acoustic"] else "No")
 
 
@@ -57,15 +58,45 @@ def show_recommendations(recs: list) -> None:
                         st.markdown(f"- {reason}")
 
 
+# ── Session defaults ──────────────────────────────────────────────────────────
+if "active_tab" not in st.session_state:
+    st.session_state.active_tab = "quick"
+
+FIRST_QUESTION = "What are you up to right now?"
+
+def init_discover():
+    """Reset discover conversation — does not touch active_tab."""
+    st.session_state.d_messages     = [{"role": "assistant", "content": FIRST_QUESTION}]
+    st.session_state.d_api_messages = []
+    st.session_state.d_profile      = None
+    st.session_state.d_recs         = None
+    st.session_state.d_k            = 5
+
+if "d_messages" not in st.session_state:
+    init_discover()
+
 # ── Header ────────────────────────────────────────────────────────────────────
 st.title("🎵 MindReader")
 st.caption("Find the right music for your moment.")
 
 tab_quick, tab_discover = st.tabs(["🔍 Quick Search", "✨ Discover"])
 
+# Re-select Discover tab after reruns if user was there
+if st.session_state.active_tab == "discover":
+    components.html("""
+        <script>
+            const click = () => {
+                const tabs = window.parent.document.querySelectorAll('[data-baseweb="tab"]');
+                if (tabs.length >= 2) tabs[1].click();
+                else setTimeout(click, 50);
+            };
+            setTimeout(click, 30);
+        </script>
+    """, height=0)
+
 
 # ══════════════════════════════════════════════════════════════════════════════
-# TAB 1 — Quick Search (existing behaviour)
+# TAB 1 — Quick Search
 # ══════════════════════════════════════════════════════════════════════════════
 with tab_quick:
     st.markdown("**Tell me what you want** and I'll find it instantly.")
@@ -98,50 +129,51 @@ with tab_quick:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# TAB 2 — Discover (conversational)
+# TAB 2 — Discover
 # ══════════════════════════════════════════════════════════════════════════════
-FIRST_QUESTION = "What are you up to right now?"
-
-def init_discover():
-    """Set up fresh discover session state."""
-    st.session_state.d_messages     = [{"role": "assistant", "content": FIRST_QUESTION}]
-    st.session_state.d_api_messages = []   # only user + assistant turns for the API
-    st.session_state.d_profile      = None
-    st.session_state.d_recs         = None
-    st.session_state.d_k            = 5
-
-if "d_messages" not in st.session_state:
-    init_discover()
-
 with tab_discover:
-    st.markdown("**Not sure what you want?** Answer a couple of questions and I'll figure it out.")
-
-    k_discover = st.slider("Number of recommendations", min_value=1, max_value=10,
-                            value=st.session_state.d_k, key="discover_k")
-    st.session_state.d_k = k_discover
-
-    # ── Recommendations sit above the chat once the profile is ready ──────────
-    if st.session_state.d_profile:
-        show_profile(st.session_state.d_profile)
-        st.divider()
-        if st.session_state.d_recs:
-            show_recommendations(st.session_state.d_recs)
-        st.divider()
-        if st.button("Start over", key="discover_reset"):
-            init_discover()
+    if st.session_state.active_tab != "discover":
+        # ── Welcome screen — shown before the user starts the conversation ────
+        st.markdown("### Not sure what you're in the mood for?")
+        st.markdown(
+            "Answer a couple of questions and I'll figure out "
+            "the perfect music for your moment."
+        )
+        st.markdown("")
+        if st.button("✨  Start Discovering", type="primary",
+                     use_container_width=True, key="start_discover"):
+            st.session_state.active_tab = "discover"
             st.rerun()
 
-    # ── Chat history in a scrollable container ────────────────────────────────
-    msg_count = len(st.session_state.d_messages)
-    chat_height = min(500, max(150, msg_count * 120))
-    chat_box = st.container(height=chat_height, border=False)
-    with chat_box:
-        for msg in st.session_state.d_messages:
-            with st.chat_message(msg["role"]):
-                st.markdown(msg["content"])
+    else:
+        # ── Active conversation ───────────────────────────────────────────────
+        k_discover = st.slider("Number of recommendations", min_value=1,
+                               max_value=10, value=st.session_state.d_k,
+                               key="discover_k")
+        st.session_state.d_k = k_discover
 
-# ── Chat input — outside tab so Streamlit renders it sticky at the bottom ────
-if not st.session_state.get("d_profile"):
+        # Recommendations appear above the chat once ready
+        if st.session_state.d_profile:
+            show_profile(st.session_state.d_profile)
+            st.divider()
+            if st.session_state.d_recs:
+                show_recommendations(st.session_state.d_recs)
+            st.divider()
+            if st.button("Start over", key="discover_reset"):
+                init_discover()
+                st.rerun()
+
+        # Chat history in a scrollable container
+        msg_count  = len(st.session_state.d_messages)
+        chat_height = min(500, max(150, msg_count * 120))
+        chat_box = st.container(height=chat_height, border=False)
+        with chat_box:
+            for msg in st.session_state.d_messages:
+                with st.chat_message(msg["role"]):
+                    st.markdown(msg["content"])
+
+# ── Chat input — sticky bottom, only when discover mode is active ─────────────
+if st.session_state.active_tab == "discover" and not st.session_state.get("d_profile"):
     if user_input := st.chat_input("Type your answer…"):
         st.session_state.d_messages.append({"role": "user", "content": user_input})
         st.session_state.d_api_messages.append({"role": "user", "content": user_input})
