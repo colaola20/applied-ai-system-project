@@ -1,5 +1,4 @@
 
-https://github.com/user-attachments/assets/3922ca86-e22d-4be8-b0c3-7d8614c21ca7
 # 🎵 Music Recommender Simulation
 
 ## 1. Title and Summary:
