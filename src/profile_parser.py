@@ -94,6 +94,55 @@ def parse_profile(query: str) -> tuple[UserProfile, dict]:
                      "target_energy": energy, "likes_acoustic": acoustic}
 
 
+DISCOVERY_SYSTEM_PROMPT = f"""You are a friendly music discovery assistant. You already asked the user: "What are you up to right now?"
+
+Based on their answers, ask at most 2 short follow-up questions (one at a time) to understand what music suits them. Then build their profile.
+
+Respond ONLY with a JSON object — no prose outside JSON:
+
+If you still need more info:
+{{"ready": false, "message": "your next question (short, friendly, one question only)"}}
+
+When you have enough (after 1-3 exchanges total):
+{{"ready": true, "favorite_genre": "<genre>", "favorite_mood": "<mood>", "target_energy": <0.0-1.0>, "likes_acoustic": <bool>, "summary": "<one warm sentence describing what you understood about what they need>"}}
+
+Valid genres: {VALID_GENRES}
+Valid moods: {VALID_MOODS}
+Energy guide: 0.1=very calm, 0.3=quiet, 0.5=moderate, 0.7=lively, 0.9=intense"""
+
+
+def chat_to_profile(messages: list[dict]) -> dict:
+    """
+    Drive a multi-turn discovery conversation.
+
+    Takes the conversation history (list of role/content dicts) and returns:
+    - {"ready": False, "message": "follow-up question"} if more info needed
+    - {"ready": True, "favorite_genre": ..., ..., "summary": ...} when done
+    """
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {"role": "system", "content": DISCOVERY_SYSTEM_PROMPT},
+            *messages,
+        ],
+        response_format={"type": "json_object"},
+        temperature=0.4,
+        max_tokens=150,
+    )
+    result = json.loads(response.choices[0].message.content)
+
+    # Validate fields when ready, same as parse_profile
+    if result.get("ready"):
+        genre = result.get("favorite_genre", VALID_GENRES[0])
+        mood  = result.get("favorite_mood",  VALID_MOODS[0])
+        result["favorite_genre"] = genre if genre in VALID_GENRES else VALID_GENRES[0]
+        result["favorite_mood"]  = mood  if mood  in VALID_MOODS  else VALID_MOODS[0]
+        result["target_energy"]  = max(0.0, min(1.0, float(result.get("target_energy", 0.5))))
+        result["likes_acoustic"] = bool(result.get("likes_acoustic", False))
+
+    return result
+
+
 def recommend_from_query(query: str, songs: list, k: int = 5) -> tuple[UserProfile, list]:
     """Parse a natural language query and return (profile, recommendations)."""
     profile, prefs = parse_profile(query)
