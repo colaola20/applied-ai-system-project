@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
-load_dotenv(Path(__file__).parent.parent / ".env")
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 sys.path.insert(0, os.path.dirname(__file__))
 

@@ -12,12 +12,17 @@ Originally, system design was very simple and not reliable. For example, if user
 Old flow:
   UserProfile (structured) → score ALL 68 songs → rank → top-5
 
+* Requires users to use exact vacabulary like "indie pop", focused", "melancholic", etc. whike some users would be more comfortable promting "I want calm acoustic music for studying late at night".
+
+
 New flow:
-  Natural language query → embed → semantic search → top-20 candidates
-                                                          ↓
-                                              score_song() on candidates only
-                                                          ↓
-                                                      top-5 + Claude explanation
+Natural language input  →  Groq (profile parser)  →  UserProfile
+                                                           ↓
+                                                    score_song() [existing]
+                                                           ↓
+                                                      top-k results
+
+* Uses Groq api to parse natural user input into a structured UserProfile.
 
 ## 3. Setup Instructions:
 ## 4. Sample Interactions:
