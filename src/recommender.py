@@ -44,7 +44,7 @@ def score_song(song: Song, user: UserProfile) -> Tuple[float, List[str]]:
         reasons.append(f"Genre match: {song.genre}")
 
     # --- valence_alignment ---
-    if user.favorite_mood in ("happy", "intense"):
+    if user.favorite_mood in ("happy", "intense", "uplifting"):
         valence_alignment = song.valence          # high valence = good fit
     else:  # chill, moody, relaxed, focused, or anything else
         valence_alignment = 1.0 - song.valence    # low valence = better fit
@@ -58,7 +58,8 @@ def score_song(song: Song, user: UserProfile) -> Tuple[float, List[str]]:
         reasons.append(f"Valence suits your '{user.favorite_mood}' preference (valence={song.valence:.2f})")
 
     # --- energy_match ---
-    energy_match = 1.0 - abs(song.energy - user.target_energy)
+    target_energy = max(0.0, min(1.0, user.target_energy))
+    energy_match = 1.0 - abs(song.energy - target_energy)
     if energy_match >= 0.8:
         reasons.append(f"Energy level is a strong fit ({song.energy:.2f} vs target {user.target_energy:.2f})")
     elif energy_match >= 0.5:

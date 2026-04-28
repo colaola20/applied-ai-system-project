@@ -142,47 +142,32 @@ def test_valence_low_for_chill_mood():
 
 
 # ---------------------------------------------------------------------------
-# BUG: "uplifting" falls into the low-valence branch (valence direction bug)
+# "uplifting" uses the high-valence branch (same as "happy" and "intense")
 # ---------------------------------------------------------------------------
 
-def test_bug_uplifting_valence_inverted():
-    """
-    'uplifting' is not in ('happy', 'intense'), so valence_alignment = 1 - valence.
-    This means a high-valence uplifting song is PENALIZED on valence.
-    This test documents the current (buggy) behaviour.
-    """
+def test_uplifting_valence_high_preferred():
+    """'uplifting' is in the high-valence group, so a high-valence song should
+    outscore a low-valence one — matching the same logic as 'happy' and 'intense'."""
     user = make_user(favorite_mood="uplifting")
     high_v = make_song(mood="uplifting", valence=0.95)
     low_v  = make_song(mood="uplifting", valence=0.10)
     score_high, _ = score_song(high_v, user)
     score_low,  _ = score_song(low_v,  user)
-    # BUG: low-valence uplifting song currently scores higher
-    assert score_low > score_high, (
-        "BUG CONFIRMED: uplifting songs with low valence outscore high-valence ones"
-    )
+    assert score_high > score_low
 
 
 # ---------------------------------------------------------------------------
-# BUG: energy_match can go negative for out-of-bounds target_energy
+# target_energy is clamped to [0.0, 1.0] — energy_match never goes negative
 # ---------------------------------------------------------------------------
 
-def test_bug_energy_match_goes_negative():
-    """
-    energy_match = 1 - abs(song.energy - target_energy)
-    With target_energy=1.5 and a calm song (energy=0.2):
-      energy_match = 1 - 1.3 = -0.3  (negative — subtracts from score)
-    """
+def test_energy_match_clamped_for_out_of_bounds_target():
+    """target_energy=1.5 is clamped to 1.0 before scoring, so energy_match
+    stays non-negative and the overall score is never dragged below zero."""
     song = make_song(energy=0.2)
     user = make_user(target_energy=1.5)
     score, _ = score_song(song, user)
-    # Reconstruct expected score with a negative energy term
-    energy_match = 1.0 - abs(0.2 - 1.5)   # -0.3
-    assert energy_match < 0, "energy_match should be negative for this input"
-    # Verify it actually reduces the overall score
-    song_mid = make_song(energy=0.8)
-    score_mid, _ = score_song(song_mid, user)
-    # The calm song is dragged lower by the negative energy component
-    assert score < score_mid
+    # After clamping: energy_match = 1 - abs(0.2 - 1.0) = 0.2  (not -0.3)
+    assert score >= 0.0
 
 
 # ---------------------------------------------------------------------------

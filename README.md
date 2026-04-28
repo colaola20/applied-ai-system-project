@@ -1,5 +1,31 @@
 # 🎵 Music Recommender Simulation
 
+## 1. Title and Summary:
+**MindReader**
+
+## Original goals and capabilities:
+The system takes into user preferences (favorite genre, favorite mood, target energy, and if a user likes accoustic) and list of songs with its caracteristics and calculates a score for each song based on similarities between user's preferences and songs' characteristics. The system returns first k songs with highest score.
+
+Originally, system design was very simple and not reliable. For example, if user ask for genre which not present in the song data, the system scores all song's genre match as 0 instead of giving some points for similar genre. Onother words, the system perform exact matching instead of similarities search which could be improved by implementing RAG.
+
+## 2. Architecture Overview:
+Old flow:
+  UserProfile (structured) → score ALL 68 songs → rank → top-5
+
+New flow:
+  Natural language query → embed → semantic search → top-20 candidates
+                                                          ↓
+                                              score_song() on candidates only
+                                                          ↓
+                                                      top-5 + Claude explanation
+
+## 3. Setup Instructions:
+## 4. Sample Interactions:
+## 5. Design Decisions:
+## 6. Testing Summary: 
+## 7. Reflection:
+
+
 ## Project Summary
 
 In this project you will build and explain a small music recommender system.
