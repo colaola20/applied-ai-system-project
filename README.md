@@ -1,3 +1,5 @@
+
+https://github.com/user-attachments/assets/3922ca86-e22d-4be8-b0c3-7d8614c21ca7
 # 🎵 Music Recommender Simulation
 
 ## 1. Title and Summary:
@@ -24,8 +26,24 @@ Natural language input  →  Groq (profile parser)  →  UserProfile
 
 * Uses Groq api to parse natural user input into a structured UserProfile.
 
+<img width="822" height="712" alt="MindReader System diagram" src="https://github.com/user-attachments/assets/f2f1d30d-edaf-4f23-87f4-ea5c1733eaad" />
+
+
 ## 3. Setup Instructions:
 ## 4. Sample Interactions:
+
+Quick search example with "I’m having a very long drive and need to stay focus and energized." prompt.
+
+https://github.com/user-attachments/assets/e2f71984-d567-45cc-bc73-0057ec9da568
+
+Discover mode. Asked for something sad.
+
+https://github.com/user-attachments/assets/f562dd7b-b526-4a02-ab26-a143b7b5376c
+
+Discover mode. Asked for something happy.
+
+https://github.com/user-attachments/assets/0bc66db7-0ece-4955-87b2-521418d72a17
+
 ## 5. Design Decisions:
 ## 6. Testing Summary: 
 ## 7. Reflection:
