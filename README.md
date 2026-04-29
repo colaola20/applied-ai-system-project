@@ -2,6 +2,8 @@
 
 https://applied-ai-system-project.onrender.com/
 
+Video walk through: https://drive.google.com/file/d/1gk9GqDz5-YmpGqAty55ai99c_sIJ59nM/view?usp=sharing
+
 ## 1. Title and Summary
 
 **MindReader** is a hybrid music recommendation system that combines rule-based scoring with LLM-powered natural language understanding.
