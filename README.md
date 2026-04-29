@@ -79,7 +79,41 @@ https://github.com/user-attachments/assets/0bc66db7-0ece-4955-87b2-521418d72a17
 
 ## 5. Design Decisions:
 I wanted the app to be easy to use for everyone and to be relyable with real data recommendations. First of all I added Groq Api to interpret 
-## 6. Testing Summary: 
+## 6. Testing Summary:
+
+### Unit tests — `tests/test_recommender.py`
+26 tests, all passing. Coverage includes the scoring formula, each weighted component, valence direction logic for every mood group, acoustic preference flipping, energy proximity ranking, edge cases (k=0, k larger than catalog, empty CSV), and the explanation output.
+
+Two bugs were caught and fixed during development:
+
+| Bug | What happened | Fix |
+|-----|--------------|-----|
+| Uplifting valence inverted | `"uplifting"` fell into the low-valence branch, so high-valence uplifting songs were penalized | Added `"uplifting"` to the `("happy", "intense")` high-valence group |
+| Negative energy score | `target_energy=1.5` produced `energy_match = 1 - 1.3 = -0.3`, dragging calm songs below zero | Clamped `target_energy` to `[0.0, 1.0]` before scoring |
+
+### Evaluation loop — `src/eval.py`
+Automated metrics across 7 profiles (4 normal + 3 adversarial). After migrating to the real 439-song catalog, mean score improved from **0.507 → 0.803**.
+
+| Profile | Genre% | Mood% | Energy | Score |
+|---------|--------|-------|--------|-------|
+| Indie Pop Fan | 100% | 100% | 0.88 | 0.95 |
+| Lofi Studier | 100% | 0% | 0.94 | 0.74 |
+| Gym Grinder | 100% | 80% | 0.96 | 0.90 |
+| Brunch Vibes | 100% | 80% | 0.89 | 0.87 |
+| [ADV] Phantom Genre (k-pop) | 0% | 100% | 0.96 | 0.57 |
+| [ADV] Out-of-Bounds Energy | 100% | 100% | 0.16 | 0.79 |
+| [ADV] Uplifting Mood | 100% | 20% | 0.97 | 0.80 |
+
+### What worked
+- Genre and energy matching is strong across all normal profiles — 100% genre hit rate and energy fit above 0.88 for every non-adversarial case
+- The LLM profile parser correctly handles vocabulary mismatches: a user asking for "k-pop" gets mapped to pop with matching energy and mood, scoring 0.57 despite zero genre matches
+- Fixing the two scoring bugs lifted the uplifting profile from ~0.65 to 0.80 and eliminated negative scores entirely
+
+### What didn't work
+- **Lofi Studier mood hit rate is 0%** — real dataset lofi tracks were labelled `chill` during mood inference (derived from audio features), but the profile requests `focused`. The songs are acoustically correct; the mood label mismatch is a limitation of inferring mood purely from energy and valence
+- **Out-of-bounds energy fit is 0.16** — `target_energy=1.5` is clamped to `1.0`, but classical songs have energy ~0.22–0.35, so the gap is inherent and expected
+- **Mood diversity is uneven** — the real dataset skews heavily toward `chill` and `energetic` (65% of songs), leaving moods like `focused`, `nostalgic`, and `romantic` underrepresented
+
 ## 7. Reflection:
 
 _______________________________________
