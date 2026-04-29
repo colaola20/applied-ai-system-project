@@ -1,5 +1,3 @@
-
-https://github.com/user-attachments/assets/6550729f-ee02-4464-8012-92d61ead9ca5
 # 🎵 Music Recommender Simulation — MindReader
 
 ## 1. Title and Summary
